@@ -352,17 +352,18 @@
                 // 'linear|ease|ease-in|ease-out|ease-in-out|cubic-bezer(x1,y1,x2,y2)',
                 // or function(t, duration),
                 // or a dynamics configuration (see below)
-                duration: 500,
+                //easing: 'ease-in',
+                duration: 150,
                 percent: 0,
                 reverse: false
               })
 
-              .easing({
-                type: 'spring',
-                frequency: 15,
-                friction: 250,
-                initialForce: false
-              })
+              //.easing({
+              //  type: 'gravity',
+              //  frequency: 15,
+              //  friction: 250,
+              //  initialForce: false
+              //})
 
               .on('step', function(v) {
                 //Have the element spring over 400px
@@ -411,9 +412,9 @@
 
             if(i != existingCards.length - 1) {
               var factor = (i + 1) / existingCards.length;
-              var top = (existingCards.length - factor * existingCards.length) * 5;
+              var top = (existingCards.length - factor * existingCards.length) * 10;
 
-              var scale = 1 - ((existingCards.length - i) / 50);
+              var scale = 1 - ((existingCards.length - i) / 33);
               card.style.transform = card.style.webkitTransform = 'scale(' + scale + ') translate3d(0, ' + top + 'px, 0)';
             }
             card.style.zIndex = (i);
@@ -425,10 +426,10 @@
         });
 
         var bringCardUp = function(card, amt) {
-          var factor = Math.min(1, Math.abs(amt));
-          var scale = 0.98 + factor / 50;
+          var factor = Math.min(1, Math.abs(amt) * 2);
+          var scale = 0.97 + factor / 33;
 
-          var top = 5 - factor * 5;
+          var top = 10 - factor * 10;
           card.style.transform = card.style.webkitTransform = 'scale(' + scale + ') translate3d(0, ' + top + 'px, 0)';
         };
 
