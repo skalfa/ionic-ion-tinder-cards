@@ -410,8 +410,11 @@
             if(!card) continue;
 
             if(i != existingCards.length - 1) {
+              var factor = (i + 1) / existingCards.length;
+              var top = (existingCards.length - factor * existingCards.length) * 5;
+
               var scale = 1 - ((existingCards.length - i) / 50);
-              card.style.transform = card.style.webkitTransform = 'scale(' + scale + ') translate3d(0, 0, 0)';
+              card.style.transform = card.style.webkitTransform = 'scale(' + scale + ') translate3d(0, ' + top + 'px, 0)';
             }
             card.style.zIndex = (i);
           }
@@ -422,8 +425,11 @@
         });
 
         var bringCardUp = function(card, amt) {
-          var scale = 0.98 + (Math.min(1, Math.abs(amt)) / 50);
-          card.style.transform = card.style.webkitTransform = 'scale(' + scale + ') translate3d(0, 0, 0)';
+          var factor = Math.min(1, Math.abs(amt));
+          var scale = 0.98 + factor / 50;
+
+          var top = 5 - factor * 5;
+          card.style.transform = card.style.webkitTransform = 'scale(' + scale + ') translate3d(0, ' + top + 'px, 0)';
         };
 
         this.partial = function(amt) {
