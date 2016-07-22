@@ -116,7 +116,7 @@
     swipe: function() {
       this.transitionOut();
     },
-    
+
     /**
      * Snap the card back to its original position
      */
@@ -140,7 +140,7 @@
       }
 
       self.onTransitionOut(self.thresholdAmount);
-      
+
       var angle = Math.atan(e.gesture.deltaX / e.gesture.deltaY);
 
       var dir = this.thresholdAmount < 0 ? -1 : 1;
@@ -158,7 +158,7 @@
       var rotateTo = this.rotationAngle;//(this.rotationAngle this.rotationDirection * 0.2));// || (Math.random() * 0.4);
 
       var duration = 0.3 - Math.min(Math.max(Math.abs(e.gesture.velocityX)/10, 0.05), 0.2);
-      
+
       ionic.requestAnimationFrame(function() {
         self.el.style.transform = self.el.style.webkitTransform = 'translate3d(' + targetX + 'px, ' + targetY + 'px,0) rotate(' + self.rotationAngle + 'rad)';
         self.el.style.transition = self.el.style.webkitTransition = 'all ' + duration + 's ease-in-out';
@@ -286,7 +286,7 @@
           var el = $element[0];
           var leftText = el.querySelector('.no-text');
           var rightText = el.querySelector('.yes-text');
-          
+
           // Force hardware acceleration for animation - better performance on first touch
           el.style.transform = el.style.webkitTransform = 'translate3d(0px, 0px, 0px)';
 
@@ -362,7 +362,7 @@
                 frequency: 15,
                 friction: 250,
                 initialForce: false
-              }) 
+              })
 
               .on('step', function(v) {
                 //Have the element spring over 400px
@@ -398,22 +398,22 @@
       scope: {},
       controller: ['$scope', '$element', function($scope, $element) {
         var cards;
-        var firstCard, secondCard, thirdCard;
-
         var existingCards, card;
 
-        var i, j;
+        var i;
 
         var sortCards = function() {
           existingCards = $element[0].querySelectorAll('td-card');
 
-          for(i = 0; i < existingCards.length; i++) {
+          for(i = existingCards.length; i >= 0; i--) {
             card = existingCards[i];
             if(!card) continue;
-            if(i > 0) {
-              card.style.transform = card.style.webkitTransform = 'translate3d(0, ' + (i * 4) + 'px, 0)';
+
+            if(i != existingCards.length - 1) {
+              var scale = 1 - ((existingCards.length - i) / 50);
+              card.style.transform = card.style.webkitTransform = 'scale(' + scale + ') translate3d(0, 0, 0)';
             }
-            card.style.zIndex = (existingCards.length - i);
+            card.style.zIndex = (i);
           }
         };
 
@@ -421,21 +421,15 @@
           sortCards();
         });
 
-        var bringCardUp = function(card, amt, max) {
-          var position, newTop;
-          position = card.style.transform || card.style.webkitTransform;
-          newTop = Math.max(0, Math.min(max, max - (max * Math.abs(amt))));
-          card.style.transform = card.style.webkitTransform = 'translate3d(0, ' + newTop + 'px, 0)';
+        var bringCardUp = function(card, amt) {
+          var scale = 0.98 + (Math.min(1, Math.abs(amt)) / 50);
+          card.style.transform = card.style.webkitTransform = 'scale(' + scale + ') translate3d(0, 0, 0)';
         };
 
         this.partial = function(amt) {
           cards = $element[0].querySelectorAll('td-card');
-          firstCard = cards[0];
-          secondCard = cards.length > 2 && cards[1];
-          thirdCard = cards.length > 3 && cards[2];
-
-          secondCard && bringCardUp(secondCard, amt, 4);
-          thirdCard && bringCardUp(thirdCard, amt, 8);
+          if (cards.length <= 1) return;
+          bringCardUp(cards[cards.length - 2], amt);
         };
       }]
     }
