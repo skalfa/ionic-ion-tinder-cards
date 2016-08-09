@@ -386,6 +386,7 @@
           });
           $scope.$parent.swipeCard = swipeableCard;
 
+          swipeCards.sortCards();
         }
       }
     }
@@ -398,12 +399,13 @@
       transclude: true,
       scope: {},
       controller: ['$scope', '$element', function($scope, $element) {
+        var self = this;
         var cards;
         var existingCards, card;
 
         var i;
 
-        var sortCards = function() {
+        this.sortCards = function() {
           existingCards = $element[0].querySelectorAll('td-card');
 
           for(i = existingCards.length; i >= 0; i--) {
@@ -422,7 +424,7 @@
         };
 
         $timeout(function() {
-          sortCards();
+          self.sortCards();
         });
 
         var bringCardUp = function(card, amt) {
