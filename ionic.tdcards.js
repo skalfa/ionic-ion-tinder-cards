@@ -165,10 +165,13 @@
       });
 
       //this.onSwipe && this.onSwipe();
+      self.el.classList.add('td-destroyed');
 
       // Trigger destroy after card has swiped out
       setTimeout(function() {
-        self.onDestroy && self.onDestroy();
+        self.onDestroy && self.onDestroy({
+          direction: dir
+        });
       }, duration * 1000);
     },
 
@@ -339,9 +342,9 @@
                 $scope.onTransitionOut({amt: amt});
               });
             },
-            onDestroy: function() {
+            onDestroy: function(attrs) {
               $timeout(function() {
-                $scope.onDestroy();
+                $scope.onDestroy(attrs);
               });
             },
             onSnapBack: function(startX, startY, startRotation) {
@@ -386,7 +389,7 @@
           });
           $scope.$parent.swipeCard = swipeableCard;
 
-          swipeCards.sortCards();
+          swipeCards.sortCards(el);
         }
       }
     }
@@ -403,10 +406,12 @@
         var cards;
         var existingCards, card;
 
+
+
         var i;
 
         this.sortCards = function() {
-          existingCards = $element[0].querySelectorAll('td-card');
+          existingCards = $element[0].querySelectorAll('td-card:not(.td-destroyed)');
 
           for(i = existingCards.length; i >= 0; i--) {
             card = existingCards[i];
