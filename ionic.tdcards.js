@@ -453,7 +453,7 @@
 
         var swiping = false;
 
-        $rootScope.$on('tdCard.pop', (e, direction) => {
+        $rootScope.$on('tdCard.pop', function(e, direction) {
           if (swiping) {
             return;
           }
