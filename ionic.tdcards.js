@@ -124,9 +124,6 @@
       ionic.requestAnimationFrame(function() {
         self.el.style.transform = self.el.style.webkitTransform = 'translate3d(200%, 50%,0) rotate(30deg)';
         self.el.style.transition = self.el.style.webkitTransition = 'all 400ms ease-in-out';
-      });
-
-      setTimeout(function() {
         self.onPartialSwipe(1);
       });
 
@@ -146,9 +143,6 @@
       ionic.requestAnimationFrame(function() {
         self.el.style.transform = self.el.style.webkitTransform = 'translate3d(-200%, -50%,0) rotate(-30deg)';
         self.el.style.transition = self.el.style.webkitTransition = 'all 400ms ease-in-out';
-      });
-
-      setTimeout(function() {
         self.onPartialSwipe(-1);
       });
 
