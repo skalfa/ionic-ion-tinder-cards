@@ -117,6 +117,51 @@
       this.transitionOut();
     },
 
+
+    swipeRight: function(cb) {
+      var self = this;
+
+      ionic.requestAnimationFrame(function() {
+        self.el.style.transform = self.el.style.webkitTransform = 'translate3d(200%, 50%,0) rotate(30deg)';
+        self.el.style.transition = self.el.style.webkitTransition = 'all 400ms ease-in-out';
+      });
+
+      setTimeout(function() {
+        self.onPartialSwipe(1);
+      });
+
+      // Trigger destroy after card has swiped out
+      setTimeout(function() {
+        self.el.classList.add('td-destroyed');
+        self.onDestroy && self.onDestroy({
+          direction: 1
+        });
+        setTimeout(cb)
+      }, 410);
+    },
+
+    swipeLeft: function(cb) {
+      var self = this;
+
+      ionic.requestAnimationFrame(function() {
+        self.el.style.transform = self.el.style.webkitTransform = 'translate3d(-200%, -50%,0) rotate(-30deg)';
+        self.el.style.transition = self.el.style.webkitTransition = 'all 400ms ease-in-out';
+      });
+
+      setTimeout(function() {
+        self.onPartialSwipe(-1);
+      });
+
+      // Trigger destroy after card has swiped out
+      setTimeout(function() {
+        self.el.classList.add('td-destroyed');
+        self.onDestroy && self.onDestroy({
+          direction: -1
+        });
+        setTimeout(cb)
+      }, 410);
+    },
+
     /**
      * Snap the card back to its original position
      */
@@ -165,10 +210,10 @@
       });
 
       //this.onSwipe && this.onSwipe();
-      self.el.classList.add('td-destroyed');
 
       // Trigger destroy after card has swiped out
       setTimeout(function() {
+        self.el.classList.add('td-destroyed');
         self.onDestroy && self.onDestroy({
           direction: dir
         });
@@ -388,7 +433,7 @@
             },
           });
           $scope.$parent.swipeCard = swipeableCard;
-
+          el.swipeCard = swipeableCard;
           swipeCards.sortCards(el);
         }
       }
@@ -406,7 +451,32 @@
         var cards;
         var existingCards, card;
 
+        var swiping = false;
 
+        $rootScope.$on('tdCard.pop', (e, direction) => {
+          if (swiping) {
+            return;
+          }
+
+          var cards = $element[0].querySelectorAll('td-card:not(.td-destroyed)');
+
+          if (!cards.length) {
+            return;
+          }
+
+          swiping = true;
+
+          if (direction > 0) {
+            cards[cards.length - 1].swipeCard.swipeRight(function() {
+              swiping = false;
+            });
+          } else {
+            cards[cards.length - 1].swipeCard.swipeLeft(function() {
+              swiping = false;
+            });
+          }
+
+        });
 
         var i;
 
@@ -441,7 +511,7 @@
         };
 
         this.partial = function(amt) {
-          cards = $element[0].querySelectorAll('td-card');
+          cards = $element[0].querySelectorAll('td-card:not(.td-destroyed)');
           if (cards.length <= 1) return;
           bringCardUp(cards[cards.length - 2], amt);
         };
@@ -451,8 +521,8 @@
 
   .factory('TDCardDelegate', ['$rootScope', function($rootScope) {
     return {
-      popCard: function($scope, isAnimated) {
-        $rootScope.$emit('tdCard.pop', isAnimated);
+      popCard: function(direction) {
+        $rootScope.$emit('tdCard.pop', direction);
       },
       getSwipeableCard: function($scope) {
         return $scope.swipeCard;
