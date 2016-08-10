@@ -279,14 +279,8 @@
       this.y = this.startY + (e.gesture.deltaY * 0.8);
 
       this.el.style.transform = this.el.style.webkitTransform = 'translate3d(' + this.x + 'px, ' + this.y  + 'px, 0) rotate(' + (this.rotationAngle || 0) + 'rad)';
-
-
       this.thresholdAmount = (this.x / (this.parentWidth/2));
-
-      var self = this;
-      setTimeout(function() {
-        self.onPartialSwipe(self.thresholdAmount);
-      });
+      this.onPartialSwipe(this.thresholdAmount);
     },
     _doDragEnd: function(e) {
       this.transitionOut(e);
@@ -344,18 +338,15 @@
             leftText: leftText,
             rightText: rightText,
             onPartialSwipe: function(amt) {
+              if (amt < 0) {
+                if (this.leftText) this.leftText.style.opacity = fadeFn(-amt);
+                if (this.rightText) this.rightText.style.opacity = 0;
+              } else {
+                if (this.leftText) this.leftText.style.opacity = 0;
+                if (this.rightText) this.rightText.style.opacity = fadeFn(amt);
+              }
               swipeCards.partial(amt);
-              var self = this;
-              $timeout(function() {
-                if (amt < 0) {
-                  if (self.leftText) self.leftText.style.opacity = fadeFn(-amt);
-                  if (self.rightText) self.rightText.style.opacity = 0;
-                } else {
-                  if (self.leftText) self.leftText.style.opacity = 0;
-                  if (self.rightText) self.rightText.style.opacity = fadeFn(amt);
-                }
-                $scope.onPartialSwipe({amt: amt});
-              });
+              $scope.onPartialSwipe({amt: amt});
             },
             onSwipeRight: function() {
               $timeout(function() {
@@ -390,12 +381,12 @@
             onDestroy: function(attrs) {
               $timeout(function() {
                 $scope.onDestroy(attrs);
+                $timeout(function() {
+                  swipeCards.sortCards();
+                });
               });
             },
             onSnapBack: function(startX, startY, startRotation) {
-              var leftText = el.querySelector('.yes-text');
-              var rightText = el.querySelector('.no-text');
-
               var animation = collide.animation({
                 // 'linear|ease|ease-in|ease-out|ease-in-out|cubic-bezer(x1,y1,x2,y2)',
                 // or function(t, duration),
@@ -449,7 +440,7 @@
       controller: ['$scope', '$element', function($scope, $element) {
         var self = this;
         var cards;
-        var existingCards, card;
+        var card;
 
         var swiping = false;
 
@@ -457,9 +448,6 @@
           if (swiping) {
             return;
           }
-
-          var cards = $element[0].querySelectorAll('td-card:not(.td-destroyed)');
-
           if (!cards.length) {
             return;
           }
@@ -481,17 +469,17 @@
         var i;
 
         this.sortCards = function() {
-          existingCards = $element[0].querySelectorAll('td-card:not(.td-destroyed)');
+          cards = $element[0].querySelectorAll('td-card:not(.td-destroyed)');
 
-          for(i = existingCards.length; i >= 0; i--) {
-            card = existingCards[i];
+          for(i = cards.length; i >= 0; i--) {
+            card = cards[i];
             if(!card) continue;
 
-            if(i != existingCards.length - 1) {
-              var factor = (i + 1) / existingCards.length;
-              var top = (existingCards.length - factor * existingCards.length) * 10;
+            if(i != cards.length - 1) {
+              var factor = (i + 1) / cards.length;
+              var top = (cards.length - factor * cards.length) * 10;
 
-              var scale = 1 - ((existingCards.length - i) / 33);
+              var scale = 1 - ((cards.length - i) / 33);
               card.style.transform = card.style.webkitTransform = 'scale(' + scale + ') translate3d(0, ' + top + 'px, 0)';
             }
             card.style.zIndex = (i);
@@ -511,7 +499,6 @@
         };
 
         this.partial = function(amt) {
-          cards = $element[0].querySelectorAll('td-card:not(.td-destroyed)');
           if (cards.length <= 1) return;
           bringCardUp(cards[cards.length - 2], amt);
         };
