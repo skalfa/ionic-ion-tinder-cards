@@ -438,7 +438,7 @@
 
         var swiping = false;
 
-        $rootScope.$on('tdCard.pop', function(e, direction) {
+        var tdCardListener = $rootScope.$on('tdCard.pop', function(e, direction) {
           if (swiping) {
             return;
           }
@@ -459,6 +459,8 @@
           }
 
         });
+
+        $scope.$on('$destroy', tdCardListener);
 
         var i;
 
